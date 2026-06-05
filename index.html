@@ -3,48 +3,109 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Équations du second degré</title>
+  <title>Équations du second degré – Collège</title>
+
+  <!-- Librairie pour tracer la courbe -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { font-family: Arial; margin: 30px; background: #f4f6f8; }
+    section { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+    button { padding: 8px 15px; margin-top: 10px; }
+  </style>
 </head>
+
 <body>
 
-<h1>Équations du second degré</h1>
+<h1>Équations du second degré (niveau collège)</h1>
 
-<p>
-Une équation du second degré est de la forme :
-<b>ax² + bx + c = 0</b>
-</p>
+<section>
+  <h2>1️⃣ Rappel du cours</h2>
+  <p>
+    Une équation du second degré est de la forme :
+    <b>ax² + bx + c = 0</b>, avec <b>a ≠ 0</b>.
+  </p>
+</section>
 
-<p>
-a : <input id="a" value="1">
-b : <input id="b" value="0">
-c : <input id="c" value="0">
-</p>
+<section>
+  <h2>2️⃣ Choisis les valeurs</h2>
+  a = <input id="a" value="1">
+  b = <input id="b" value="0">
+  c = <input id="c" value="0">
+  <br><br>
+  <button onclick="resoudre()">Résoudre</button>
+  <button onclick="tracer()">Voir la courbe</button>
+</section>
 
-<button onclick="resoudre()">Résoudre</button>
+<section>
+  <h2>3️⃣ Résolution</h2>
+  <div id="etapes"></div>
+</section>
 
-<p id="resultat"></p>
+<canvas id="graph" width="600" height="400"></canvas>
 
 <script>
-function resoudre() {
-  let a = Number(document.getElementById("a").value);
-  let b = Number(document.getElementById("b").value);
-  let c = Number(document.getElementById("c").value);
+let graphique = null;
 
-  let delta = b*b - 4*a*c;
-  let texte = "Δ = " + delta + "<br>";
+function resoudre() {
+  const aVal = Number(document.getElementById("a").value);
+  const bVal = Number(document.getElementById("b").value);
+  const cVal = Number(document.getElementById("c").value);
+
+  const delta = bVal*bVal - 4*aVal*cVal;
+
+  let texte = `
+    <p><b>Étape 1 :</b> Calcul du discriminant</p>
+    <p>Δ = b² - 4ac = ${bVal}² - 4×${aVal}×${cVal} = ${delta}</p>
+  `;
 
   if (delta > 0) {
-    let x1 = (-b - Math.sqrt(delta)) / (2*a);
-    let x2 = (-b + Math.sqrt(delta)) / (2*a);
-    texte += "Deux solutions : " + x1.toFixed(2) + " et " + x2.toFixed(2);
+    const x1 = (-bVal - Math.sqrt(delta)) / (2*aVal);
+    const x2 = (-bVal + Math.sqrt(delta)) / (2*aVal);
+    texte += `
+      <p><b>Étape 2 :</b> Deux solutions</p>
+      <p>x₁ = ${x1.toFixed(2)} et x₂ = ${x2.toFixed(2)}</p>
+    `;
   } else if (delta === 0) {
-    let x0 = -b / (2*a);
-    texte += "Une solution : " + x0.toFixed(2);
+    const x0 = -bVal / (2*aVal);
+    texte += `
+      <p><b>Étape 2 :</b> Une solution unique</p>
+      <p>x = ${x0.toFixed(2)}</p>
+    `;
   } else {
-    texte += "Aucune solution réelle";
+    texte += `<p><b>Étape 2 :</b> Aucune solution réelle</p>`;
   }
 
-  document.getElementById("resultat").innerHTML = texte;
+  document.getElementById("etapes").innerHTML = texte;
+}
+
+function tracer() {
+  const aVal = Number(document.getElementById("a").value);
+  const bVal = Number(document.getElementById("b").value);
+  const cVal = Number(document.getElementById("c").value);
+
+  let x = [];
+  let y = [];
+
+  for (let i = -10; i <= 10; i += 0.5) {
+    x.push(i);
+    y.push(aVal*i*i + bVal*i + cVal);
+  }
+
+  if (graphique) graphique.destroy();
+
+  graphique = new Chart(document.getElementById("graph"), {
+    type: "line",
+    data: {
+      labels: x,
+      datasets: [{
+        label: "y = ax² + bx + c",
+        data: y,
+        borderColor: "blue",
+        fill: false
+      }]
+    }
+  });
 }
 </script>
 
