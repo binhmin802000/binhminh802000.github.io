@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Équations du second degré</title>
+</head>
+<body>
+
+<h1>Équations du second degré</h1>
+
+<p>
+Une équation du second degré est de la forme :
+<b>ax² + bx + c = 0</b>
+</p>
+
+<p>
+a : <input id="a" value="1">
+b : <input id="b" value="0">
+c : <input id="c" value="0">
+</p>
+
+<button onclick="resoudre()">Résoudre</button>
+
+<p id="resultat"></p>
+
+<script>
+function resoudre() {
+  let a = Number(document.getElementById("a").value);
+  let b = Number(document.getElementById("b").value);
+  let c = Number(document.getElementById("c").value);
+
+  let delta = b*b - 4*a*c;
+  let texte = "Δ = " + delta + "<br>";
+
+  if (delta > 0) {
+    let x1 = (-b - Math.sqrt(delta)) / (2*a);
+    let x2 = (-b + Math.sqrt(delta)) / (2*a);
+    texte += "Deux solutions : " + x1.toFixed(2) + " et " + x2.toFixed(2);
+  } else if (delta === 0) {
+    let x0 = -b / (2*a);
+    texte += "Une solution : " + x0.toFixed(2);
+  } else {
+    texte += "Aucune solution réelle";
+  }
+
+  document.getElementById("resultat").innerHTML = texte;
+}
+</script>
+
+</body>
+</html>
