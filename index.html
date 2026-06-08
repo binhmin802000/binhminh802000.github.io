@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -57,7 +58,8 @@
     <div id="etapes"></div>
   </section>
 
-  <section>
+  <!-- ✅ AJOUT : id pour scroller vers la courbe -->
+  <section id="zoneCourbe">
     <h2>4️⃣ Représentation graphique</h2>
     <canvas id="graph" width="650" height="380"></canvas>
     <p class="small"><b>Lecture graphique :</b> les solutions sont les <b>abscisses</b> des points où la courbe coupe l’axe des x.</p>
@@ -230,16 +232,15 @@ function tracer(){
       }
     }
   });
+
+  /* ✅ AJOUT : scroll automatique vers la courbe */
+  document.getElementById("zoneCourbe").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
 /* ===================== BANQUE D’EXERCICES PAR CHAPITRE ===================== */
-/*
-  Une entrée d’exercice :
-  - niveau : 1/2/3
-  - enonce : texte HTML
-  - solutions : [] (tableau de solutions réelles) OU null si aucune solution réelle
-  - correction : texte HTML (pour afficher une correction lisible)
-*/
 const banque = {
   "Ch.1 — Produit nul (factorisation)": [
     {
@@ -285,7 +286,7 @@ const banque = {
       niveau: 3,
       enonce: "Résoudre : <b>x² + x + 1 = 0</b>",
       solutions: null,
-      correction: "Δ = 1 - 4 = -3 &lt; 0 ⇒ aucune solution réelle."
+      correction: "Δ = 1 - 4 = -3 < 0 ⇒ aucune solution réelle."
     }
   ],
 
@@ -305,7 +306,7 @@ const banque = {
   ]
 };
 
-let exoCourant = null; // contiendra l’exercice sélectionné
+let exoCourant = null;
 
 function remplirListeChapitres(){
   const select = document.getElementById("chapitreSelect");
@@ -336,8 +337,6 @@ function genererExerciceDepuisBanque(){
   const niveau = Number(document.getElementById("niveauSelect").value);
 
   const liste = banque[chapitre].filter(e => e.niveau === niveau);
-
-  // Si aucun exercice pile au niveau demandé, on prend tous les exercices du chapitre
   const pool = (liste.length > 0) ? liste : banque[chapitre];
 
   exoCourant = pool[Math.floor(Math.random() * pool.length)];
@@ -371,7 +370,6 @@ function corriger(){
   const rep2 = document.getElementById("rep2").value.trim();
   const noRealChecked = document.getElementById("noReal").checked;
 
-  // Cas : aucune solution réelle attendue
   if (exoCourant.solutions === null) {
     if (noRealChecked || rep1.toLowerCase() === "aucune" || rep2.toLowerCase() === "aucune") {
       document.getElementById("correction").innerHTML = `<span class="ok">✅ Correct !</span><br><span class="small">${exoCourant.correction}</span>`;
@@ -382,14 +380,10 @@ function corriger(){
     return;
   }
 
-  // Cas : une ou deux solutions réelles attendues
   const target = exoCourant.solutions.slice().sort((x,y)=>x-y);
-
-  // Convertir réponses en nombres
   const r1 = parseNumberOrFraction(rep1);
   const r2 = parseNumberOrFraction(rep2);
 
-  // Accepter aussi le cas solution unique : l’élève peut mettre la solution dans x₁ OU x₂
   if (target.length === 1) {
     const ok = (isFinite(r1) && approxEqual(r1, target[0])) || (isFinite(r2) && approxEqual(r2, target[0]));
     document.getElementById("correction").innerHTML = ok
@@ -398,7 +392,6 @@ function corriger(){
     return;
   }
 
-  // Deux solutions : l’ordre n’importe pas
   if (!isFinite(r1) || !isFinite(r2)) {
     document.getElementById("correction").innerHTML =
       `<span class="ko">❌ Réponses invalides.</span> Écris par exemple <code>-3/2</code> ou <code>-1.5</code>.`;
@@ -406,7 +399,6 @@ function corriger(){
   }
 
   const rep = [r1, r2].sort((x,y)=>x-y);
-
   const ok = approxEqual(rep[0], target[0]) && approxEqual(rep[1], target[1]);
 
   document.getElementById("correction").innerHTML = ok
@@ -414,7 +406,6 @@ function corriger(){
     : `<span class="ko">❌ Non.</span> Correction : <b>x₁=${target[0]}</b> ; <b>x₂=${target[1]}</b><br><span class="small">${exoCourant.correction}</span>`;
 }
 
-/* Init au chargement */
 remplirListeChapitres();
 resetExoUI();
 </script>
